@@ -9,12 +9,12 @@ interface SummaryProps {
   newInvoiceAmount: number;
 }
 
-const Summary: React.FC<SummaryProps> = ({
+const Summary = ({
   selectedInvoice,
   selectedCreditNotes,
   totalCreditAmount,
   newInvoiceAmount,
-}) => {
+}: SummaryProps) => {
   return (
     <div className="mt-6 p-4 bg-blue-50 rounded-lg shadow-md transition-all duration-300 ease-in-out">
       <h4 className="font-semibold text-lg text-blue-800 mb-2">

@@ -5,19 +5,13 @@ import { useInvoices } from "@/hooks/useInvoices";
 import type { Invoice } from "@/shared/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import Summary from "@/components/InvoiceAssignment/Summary";
-import { SuccessModal } from "@/components/InvoiceAssignment/SuccessModal";
 
 import { formatCurrency } from "@/lib/utils";
+
+import { ReceivedInvoicesTable } from "@/components/InvoiceAssignment/RecievedTable";
+import { CreditNotesTable } from "@/components/InvoiceAssignment/CreditNoteTable";
+import Summary from "@/components/InvoiceAssignment/Summary";
+import { SuccessModal } from "@/components/InvoiceAssignment/SuccessModal";
 
 export function InvoiceAssignment() {
   const { invoices, loading, error } = useInvoices();
@@ -71,76 +65,6 @@ export function InvoiceAssignment() {
     );
   };
 
-  const renderReceivedInvoices = () => (
-    <TableBody>
-      {receivedInvoices.map((invoice, index) => (
-        <TableRow
-          key={invoice.id}
-          className={`cursor-pointer transition-colors ${
-            selectedInvoice?.id === invoice.id
-              ? "bg-blue-200"
-              : "hover:bg-blue-100"
-          }`}
-          onClick={() => handleInvoiceSelect(invoice)}
-        >
-          <TableCell>{index + 1}</TableCell>
-          <TableCell>{invoice.organization_id}</TableCell>
-          <TableCell>
-            {formatCurrency(invoice.amount, invoice.currency)}
-          </TableCell>
-          <TableCell>
-            <Badge variant="secondary" className="bg-blue-100 text-blue-700">
-              Recibida
-            </Badge>
-          </TableCell>
-          <TableCell className="text-center">
-            <div className="flex items-center justify-center">
-              <div className="w-5 h-5 border-2 border-blue-400 rounded-full flex items-center justify-center">
-                {selectedInvoice?.id === invoice.id && (
-                  <div className="w-3 h-3 bg-blue-400 rounded-full" />
-                )}
-              </div>
-            </div>
-          </TableCell>
-        </TableRow>
-      ))}
-    </TableBody>
-  );
-
-  const renderCreditNotes = () => (
-    <TableBody>
-      {creditNotes.map((creditNote, index) => (
-        <TableRow
-          key={creditNote.id}
-          className={`cursor-pointer transition-colors ${
-            selectedCreditNotes.some((note) => note.id === creditNote.id)
-              ? "bg-blue-200"
-              : "hover:bg-blue-100"
-          }`}
-          onClick={() => handleCreditNoteSelect(creditNote)}
-        >
-          <TableCell>{index + 1}</TableCell>
-          <TableCell>{creditNote.organization_id}</TableCell>
-          <TableCell>
-            {formatCurrency(creditNote.amount, creditNote.currency)}
-          </TableCell>
-          <TableCell className="text-blue-600">
-            # {getInvoiceNumber(creditNote)}
-          </TableCell>
-          <TableCell className="text-center">
-            <div className="flex items-center justify-center">
-              <div className="w-5 h-5 border-2 border-blue-400 rounded-full flex items-center justify-center">
-                {selectedCreditNotes.some(
-                  (note) => note.id === creditNote.id
-                ) && <div className="w-3 h-3 bg-blue-400 rounded-full" />}
-              </div>
-            </div>
-          </TableCell>
-        </TableRow>
-      ))}
-    </TableBody>
-  );
-
   if (loading) return <div className="text-center py-10">Cargando...</div>;
 
   if (error)
@@ -159,44 +83,24 @@ export function InvoiceAssignment() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-blue-50">
-                <TableHead className="w-12 text-blue-700">#</TableHead>
-                <TableHead className="text-blue-700">Organización</TableHead>
-                <TableHead className="text-blue-700">Monto</TableHead>
-                <TableHead className="text-blue-700">Tipo</TableHead>
-                <TableHead className="w-20 text-blue-700">
-                  Seleccionado
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            {renderReceivedInvoices()}
-          </Table>
+          <ReceivedInvoicesTable
+            invoices={receivedInvoices}
+            selectedInvoice={selectedInvoice}
+            onSelectInvoice={handleInvoiceSelect}
+          />
 
           {selectedInvoice && (
             <div className="mt-8 transition-all duration-300 ease-in-out">
               <h3 className="text-xl font-semibold text-blue-800 mb-4">
                 Seleccionar Notas de Crédito
               </h3>
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-blue-50">
-                    <TableHead className="w-12 text-blue-700">#</TableHead>
-                    <TableHead className="text-blue-700">
-                      Organización
-                    </TableHead>
-                    <TableHead className="text-blue-700">Monto</TableHead>
-                    <TableHead className="text-blue-700">
-                      Factura Asociada
-                    </TableHead>
-                    <TableHead className="w-20 text-blue-700">
-                      Seleccionado
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                {renderCreditNotes()}
-              </Table>
+
+              <CreditNotesTable
+                creditNotes={creditNotes}
+                selectedCreditNotes={selectedCreditNotes}
+                onSelectCreditNote={handleCreditNoteSelect}
+                getInvoiceNumber={getInvoiceNumber}
+              />
 
               {selectedCreditNotes.length > 0 && (
                 <Summary
@@ -224,8 +128,8 @@ export function InvoiceAssignment() {
         onOpenChange={setShowSuccessModal}
         selectedInvoice={selectedInvoice}
         newInvoiceAmount={newInvoiceAmount}
-        formatCurrency={formatCurrency}
         handleCloseModal={handleCloseModal}
+        formatCurrency={formatCurrency}
       />
     </div>
   );

@@ -6,7 +6,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-// Importa o define tu tipo Invoice si lo necesitas
 import type { Invoice } from "@/shared/types";
 
 interface SuccessModalProps {
