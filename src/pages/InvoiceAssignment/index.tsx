@@ -6,7 +6,7 @@ import type { Invoice } from "@/shared/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-import { formatCurrency } from "@/lib/utils";
+import { convertAmount, formatCurrency } from "@/lib/utils";
 
 import { ReceivedInvoicesTable } from "@/components/InvoiceAssignment/RecievedTable";
 import { CreditNotesTable } from "@/components/InvoiceAssignment/CreditNoteTable";
@@ -51,10 +51,12 @@ export function InvoiceAssignment() {
     setSelectedCreditNotes([]);
   };
 
-  const totalCreditAmount = selectedCreditNotes.reduce(
-    (sum, note) => sum + note.amount,
-    0
-  );
+  const totalCreditAmount = selectedCreditNotes.reduce((sum, note) => {
+    return (
+      sum + convertAmount(note.amount, note.currency, selectedInvoice!.currency)
+    );
+  }, 0);
+
   const newInvoiceAmount = selectedInvoice
     ? selectedInvoice.amount - totalCreditAmount
     : 0;

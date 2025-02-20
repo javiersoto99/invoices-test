@@ -37,7 +37,8 @@ const Summary = ({
       </p>
       <p className="font-bold text-blue-900">
         Nuevo Monto de Factura:{" "}
-        {formatCurrency(newInvoiceAmount, selectedInvoice?.currency || "")}
+        {selectedInvoice &&
+          formatCurrency(newInvoiceAmount, selectedInvoice.currency)}
       </p>
     </div>
   );
